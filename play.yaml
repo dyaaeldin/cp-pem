@@ -1,0 +1,20 @@
+---
+- hosts: localhost
+  vars: 
+    src: "/tmp/source"
+    dest: "/tmp/dest"
+  tasks:
+    - name: find the pem files.
+      find:
+        paths: "{{ src }}"
+        patterns: "*.pem"
+        recurse: False
+      register: pem_files
+    - name: pem_files_list
+      set_fact: 
+        pem_files_list: "{{ pem_files.files }}"
+    - name: Copy pem files
+      copy: 
+        src: "{{ item }}"
+        dest: "{{ dest }}"
+      loop: "{{pem_files.files | map(attribute='path') | list}}"
